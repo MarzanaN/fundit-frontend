@@ -1,0 +1,252 @@
+
+body {
+    margin-left: 100px;
+    margin-right: 100px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(142, 102, 252);
+    background-color: black;
+  }
+
+  
+.features-page {
+    padding: 1rem 15%;
+    padding-bottom: 5rem;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: "Russo One", sans-serif;
+  }
+  
+  .features-hero {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  
+  .features-hero h1 {
+    font-size: 2.5rem;
+    color: #8e66fc;
+    letter-spacing: 2px;
+  }
+  
+  .features-hero p {
+    font-size: 1.2rem;
+    color: aqua;
+    letter-spacing: 1px;
+  }
+  
+  .feature-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+  }
+  
+  .feature-section.reverse {
+    flex-direction: row-reverse;
+  }
+  
+  .feature-text,
+  .feature-info {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .feature-info h2,
+  .feature-text h2 {
+    color: #8e66fc;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .feature-info p,
+  .feature-text p {
+    color: #ccc;
+    font-size: 1.1rem;
+  }
+  
+  .feature-icon {
+    font-size: 2rem;
+    color: #6c63ff;
+    margin-bottom: 1rem;
+  }
+  
+  .chart-container,
+  .feature-chart {
+    flex: 1;
+    min-width: 300px;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgb(142, 102, 252);
+    border-radius: 40px;
+    box-shadow: 0 4px 20px rgb(241, 240, 243);
+  }
+  
+  .goal-bar-container p {
+    margin: 0.5rem 0 0.2rem;
+    color: #ccc;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    
+  }
+  
+  .goal-bar {
+    background-color: #3a3a4d;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 70%;
+    height: 30px;
+    margin: 1rem auto;
+    position: relative;
+  }
+
+  .feature-info h4 {
+    letter-spacing: 1px;
+    color: aqua;
+    font-size: 20px;
+  }
+  
+  
+  .goal-fill {
+    background-color: #00bfff;
+    height: 100%;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    line-height: 30px;
+    font-weight: bold;
+    border-radius: 12px 0 0 12px;
+  }
+  
+  .goal-fill.full {
+    width: 100%;
+    background-color: #8e66fc;
+  }
+  
+  .financial-goals-section {
+    flex: 1;
+    min-width: 300px;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgb(142, 102, 252);
+    border-radius: 40px;
+    box-shadow: 0 4px 20px rgb(241, 240, 243);
+  }
+  
+  .recharts-bar-rectangle:hover {
+    opacity: 0.6; 
+  }
+  
+  .recharts-active-bar {
+    opacity: 0.6 !important; 
+  }
+  
+  .recharts-tooltip-cursor {
+    fill: rgba(61, 59, 59, 0.644) !important; 
+  }
+
+
+  @media (min-width: 250px) and (max-width: 700px){
+
+    body {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    
+      
+    .features-page {
+        padding: 1.5rem;
+        padding-bottom: 3rem;
+      }
+      
+      .features-hero {
+        margin-bottom: 2rem;
+      }
+      
+      .features-hero h1 {
+        font-size: 2.1rem;
+        color: #8e66fc;
+        letter-spacing: 2px;
+      }
+      
+      .features-hero p {
+        font-size: 1.1rem;
+        color: aqua;
+        letter-spacing: 1px;
+      }
+
+      .feature-info h2,
+      .feature-text h2 {
+        font-size: 1.5rem;
+      }
+      
+      .feature-info p,
+      .feature-text p {
+        font-size: 1rem;
+      }
+
+      .financial-goals-section {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.5rem;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgb(142, 102, 252);
+        border-radius: 40px;
+        box-shadow: 0 4px 20px rgb(241, 240, 243);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        color: #6c63ff;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+      }
+
+      .feature-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    
+      .feature-chart,
+      .chart-container {
+        width: 90%;
+        max-width: 100%;
+        height: auto;
+        margin-top: -1rem;
+      }
+    
+      .feature-chart .recharts-responsive-container,
+      .chart-container .recharts-responsive-container {
+        height: 230px !important; 
+      }
+    
+      .feature-text,
+      .feature-info {
+        padding: 0 1rem;
+      }
+
+
+  }
+
+  @media (min-width: 1801px){
+    .features-hero h1 {
+        font-size: 3.5rem;
+        margin-left: 100px;
+        margin-right: 100px;
+        margin-bottom: 20px;
+        margin-top: 2rem;
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+
+      }
+
+      .features-page {
+        padding: 1rem 29%;
+      }
+  }
+  

@@ -1,0 +1,595 @@
+
+.settings-container {
+    background-color: rgb(255, 255, 255);
+    color: rgb(142, 102, 252);
+    font-family: 'Russo One', sans-serif;
+    padding: 10px 100px;
+    min-height: 80vh;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: center;
+}
+
+.account-container {
+    background-color: rgb(255, 255, 255);
+    color: rgb(142, 102, 252);
+    font-family: 'Russo One', sans-serif;
+    padding: 10px 100px;
+    height: 730px;
+    letter-spacing: 1px;
+    border-radius: 40px;
+    box-shadow: 0 2px 10px rgba(40, 39, 41, 0.5);
+    width: 500px;
+    margin-top: 4rem;
+  }
+
+h2 {
+  margin-bottom: 25px;
+  color: rgb(142, 102, 252);
+  font-size: 35px;
+  text-align: center;
+}
+
+h3 {
+    margin-bottom: 0;
+    color: rgb(142, 102, 252);
+    font-size: 25px;
+    text-align: center;
+  }
+
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-pair {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.form-group,
+.form-group-currency {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+
+label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color:  rgb(142, 102, 252);
+}
+
+
+.form-group input[type="text"],
+ [type="email"], [type="password"] {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #8000ff;
+    background-color: #ffffff;
+    color: #201f1f;
+    width: 80%;
+  }
+
+  .form-group select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #8000ff;
+    background-color: #ffffff;
+    color: #201f1f;
+    width: 90%;
+  }
+
+  .form-group-currency select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #8000ff;
+    background-color: #ffffff;
+    color: #201f1f;
+    width: 20%;
+  }
+  
+
+.dob-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.update-btn-settings {
+  margin-top: 10px;
+  padding: 1rem;
+  background-color: #8000ff;
+  border: none;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 40%;
+  align-items: center;
+  justify-content: center;
+}
+
+.update-btn-settings:hover {
+  background-color: #a64dff;
+}
+
+.delete-link{
+  margin-top: 20px;
+  color: #6d6868;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+}
+
+.password-link {
+  margin-top: 20px;
+  color: #6d6868;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  position: absolute;
+  margin-top: 7rem;
+}
+
+
+.preferences-section {
+    margin-top: 25px;
+    padding-top: 10px;
+    border-top: 1px solid #dcdcdc;
+  }
+  
+  .preference-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  
+  .preference-option label {
+    font-size: 14px;
+    color: #8e66fc;
+  }
+  
+  .preference-option select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #8000ff;
+    background-color: #ffffff;
+    color: #201f1f;
+    font-family: 'Russo One', sans-serif;
+  }
+
+  .preferences-section input[type="date"] {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #8000ff;
+    background-color: #ffffff;
+    color: #201f1f;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(35%) sepia(92%) saturate(655%) hue-rotate(220deg) brightness(95%) contrast(88%);
+  cursor: pointer;
+  }
+
+  .password-input-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-input-wrapper input {
+    flex-grow: 1;
+    min-width: 0; 
+  }
+  
+  .eye-icon {
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    margin-bottom: -0.3rem;
+  }
+  
+
+  .change-password-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #dcdcdc;
+  }
+  
+  .password-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .password-group label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: rgb(142, 102, 252);
+  }
+  
+  .password-group input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #8000ff;
+    background-color: #ffffff;
+    color: #201f1f;
+  }
+  
+  .save-password-btn {
+    padding: 12px;
+    background-color: #8000ff;
+    border: none;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    font-family: 'Russo One', sans-serif;
+  }
+  
+  .save-password-btn:hover {
+    background-color: #a64dff;
+  }
+  
+  .section-divider {
+    margin: 40px 0;
+    height: 1px;
+    background-color: #dcdcdc;
+    width: 100%;
+  }
+  
+
+  .success-update-message {
+    color: green;
+    font-size: 18px;
+    margin-top: 12px;
+    text-align: center;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+.overlay-delete,
+.overlay-password,
+.overlay-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 10, 10, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+
+
+  .overlay-content-delete,
+  .overlay-content-password,
+  .overlay-content-message {
+    background-color: #000;
+    color: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgb(142, 102, 252);
+    box-shadow: 0 0 20px rgba(225, 223, 229, 0.5);
+    width: 85%;
+    max-width: 480px;
+    font-family: 'Russo One', sans-serif;
+    position: relative;
+    transition: all 0.3s ease;
+    margin-top: -4rem;
+  }
+
+  .overlay-content-delete h3 {
+    color: #8a2be2;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.3rem;
+  }
+
+  .overlay-content-password h3 {
+    color: #8a2be2;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 0.5rem;
+  }
+  
+  .overlay-content-delete label,
+  .overlay-content-password label {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #d6d6f5;
+  }
+  
+  .overlay-content-delete input[type="text"],
+  .overlay-content input[type="password"],
+  .overlay-content-delete select {
+    width: 95%;
+    padding: 0.45rem 0.7rem;
+    margin-top: 0.4rem;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background-color: #2b2b3d;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+
+
+  .overlay-content-password input[type="password"]  {
+    width: 100%;
+    padding: 0.45rem 0.7rem;
+    margin-top: 0.4rem;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background-color: #2b2b3d;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+
+  .overlay-content-delete textarea {
+    width: 90%;
+    padding: 0.45rem 0.7rem;
+    margin-top: 0.4rem;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background-color: #2b2b3d;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+  
+  .overlay-content-delete textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+  
+  .star-rating {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .star-rating svg {
+    color: #888;
+    cursor: pointer;
+    font-size: 1.3rem;
+    transition: color 0.3s;
+  }
+  
+  .star-rating svg.active {
+    color: #ffc107;
+  }
+  
+  .overlay-content-delete input[type="checkbox"] {
+    margin-right: 0.4rem;
+    transform: scale(1.1);
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+  }
+
+  .button-group-password {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+  }
+  
+  .delete-btn,
+  .cancel-btn,
+  .update-btn,
+  .cancel-btn-password,
+  .update-btn-password   {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    min-width: 120px;
+    margin-bottom: 0.3rem;
+    margin-top: 0.3rem;
+  }
+
+  .delete-btn {
+    background-color: #d32f2f;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background-color: #e53935;
+  }
+  
+  .cancel-btn,
+  .cancel-btn-password {
+    background-color: #555;
+    color: white;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #777;
+  }
+  
+  .update-btn,
+  .update-btn-password {
+    background-color: #8a2be2;
+    color: white;
+  }
+  
+  .update-btn:hover {
+    background-color: #a64cf5;
+  }
+  
+
+  .password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-input-wrapper input {
+    width: 100%;
+    padding-right: 2.5rem;
+  }
+  
+  .eye-icon {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #aaa;
+  }
+  
+
+  .delete-feedback {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .delete-feedback.success {
+    color: #4caf50;
+  }
+  
+  .delete-feedback.error {
+    color: #f44336; 
+  }
+  
+
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
+
+  .password-feedback {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .password-feedback.success {
+    color: #4caf50;
+  }
+  
+  .password-feedback.error {
+    color: #f44336; 
+  }
+
+
+  @media (min-width: 250px) and (max-width: 700px){
+
+    .settings-container {
+      margin-top: 1rem;
+      width: auto;
+      padding: 1rem;
+      min-height: 0;
+
+  }
+
+  .account-container {
+    padding: 0;
+    height: 730px;
+    border-radius: none;
+    box-shadow: none;
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
+
+  .settings-form {
+    margin-top: -1rem;
+  }
+
+  .input-pair {
+    gap: 10px;
+    margin-top: 1rem;
+  }
+
+  .password-link {
+    margin-top: 7rem;
+    font-size: 13px;
+    text-align: center;
+    position: absolute;
+  }
+
+  .preferences-section {
+    margin-top: 1.5rem;
+    margin-left: -3rem;
+  }
+
+  .form-group-currency label {
+    margin-top: -1rem;
+  }
+
+  .update-btn-settings {
+    width: 50%;
+  }
+
+  .delete-link {
+    margin-top: 0.5rem;
+  }
+
+  .settings-form h3 {
+    font-size: 25px;
+  }
+
+  .overlay-content-delete,
+  .overlay-content-password,
+  .overlay-content-message {
+    width: 78%;
+    max-width: 480px;
+
+  }
+
+  .overlay-content-delete,
+  .overlay-content-password,
+  .overlay-content-message {
+    background-color: #000;
+    width: 78%;
+  }
+
+  .eye-icon {
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  }
+
+
+  @media (min-width: 1801px){
+
+    .settings-container {
+        min-height: 75vh;
+    }
+
+  }

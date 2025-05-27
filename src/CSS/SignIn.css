@@ -1,0 +1,108 @@
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(142, 102, 252);
+  background-color: black;
+}
+
+.signin-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: none;
+    margin-top: 0;
+  }
+  
+  .signin-box {
+    background: none;
+    padding: 2rem;
+    font-family: "Russo One", sans-serif;
+  }
+  
+  .signin-box h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 40px;
+    margin-top: 10px;
+  }
+  
+  .public-input-group {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .public-input-icon {
+    position: absolute;
+    top: 58%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #ffffff;
+  }
+  
+  .public-input-group input {
+    width: 90%;
+    padding: 10px 10px 10px 36px;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    background-color: rgb(0, 0, 0);
+    color: #ffffff;
+  }
+
+  .public-input-group [type="text"] {
+    width: 90%;
+    padding: 10px 10px 10px 36px;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    background-color: rgb(0, 0, 0);
+    color: #ffffff;
+  }
+
+
+  .forgot-password {
+    text-align: left;
+    margin-bottom: 1rem;
+  }
+  
+  .forgot-password a {
+    font-size: 12px;
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .signin-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .signin-button:hover {
+    background-color: #0056b3;
+  }
+
+  .signin-container.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.3s ease;
+  }
+  
+  .toggle-password-icon {
+    position: absolute;
+    right: 0;
+    top: 55%;
+    transform: translateY(-50%);
+    color: #aaa;
+  }
+  .public-input-group {
+    position: relative;
+  }
+  
+  

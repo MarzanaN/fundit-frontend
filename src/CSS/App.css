@@ -1,0 +1,677 @@
+
+.App{
+  margin: 0 !important;
+  padding:  0 !important;
+}
+
+body{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* App wrapper */
+.App {
+  text-align: center;
+}
+
+/* NAV BAR LAYOUT */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #000000;
+  border-bottom: 1px solid rgba(142, 102, 252, 0.363);
+  flex-wrap: nowrap; /* Prevent wrapping */
+  padding-left: 7rem;
+  padding-right: 7rem;
+}
+
+/* Logo styling */
+.logo img {
+  display: block;
+  max-width: 120px;
+  height: auto;
+}
+
+/* Navigation styles */
+.main-nav ul {
+  display: flex;
+  gap: 60px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav li {
+  cursor: pointer;
+  color: rgb(142, 102, 252);
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.main-nav li:hover {
+  color: rgba(125, 92, 169, 0.537);
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.main-nav a:hover {
+  text-decoration: none;
+}
+
+/* Auth buttons (Sign In & Register) */
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.auth-buttons button {
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid rgb(142, 102, 252);
+  background-color: black;
+  color: rgb(142, 102, 252);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.auth-buttons button:hover {
+  background-color: rgb(142, 102, 252);
+  color: white;
+}
+
+.site-footer {
+  background-color: #000;
+  color: rgb(142, 102, 252);
+  padding: 40px 60px;
+  text-align: center;
+  border-top: 1px solid rgba(142, 102, 252, 0.2);
+}
+
+.site-footer h3 {
+  font-family: "Russo One", sans-serif;
+  font-size: 24px;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.site-footer p {
+  margin: 5px 0 20px;
+  font-size: 14px;
+  color: rgb(142, 102, 252);
+}
+
+/* Navigation Links */
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.footer-nav li {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-nav li a{
+  text-decoration: none;
+}
+
+.footer-nav li:hover {
+  color: white;
+}
+
+/* Social Icons  */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.social-icons a {
+  color: rgb(142, 102, 252);
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: white;
+}
+
+/* User Dropdown Button  */
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid rgb(142, 102, 252);
+  background-color: black;
+  color: rgb(142, 102, 252);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.user-button:hover {
+  background-color: rgb(142, 102, 252);
+  color: white;
+}
+
+.user-icon {
+  font-size: 18px;
+}
+
+.guest-label {
+  font-weight: bold;
+}
+
+/* Dropdown menu styling */
+.user-dropdown-menu {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  background-color: #000000;
+  border: 1px solid rgba(142, 102, 252, 0.4);
+  border-radius: 4px;
+  padding: 6px 0;
+  margin: 0;
+  list-style: none;
+  z-index: 1000;
+  width: 140px;
+}
+
+.user-dropdown-menu li {
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.user-dropdown-menu li a,
+.user-dropdown-menu li button {
+  color: rgb(142, 102, 252);
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  width: 70%;
+  display: block;
+  text-align: left;
+}
+
+.user-dropdown-menu li:hover {
+  background-color: rgba(142, 102, 252, 0.1);
+  color: white;
+}
+
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 15, 15, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 2rem;
+  overflow-y: auto; 
+  animation: fadeZoom 0.6s ease forwards;
+}
+
+.auth-overlay-header {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1001; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px; 
+  width: 30px; 
+}
+
+.close-auth-overlay {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.close-auth-overlay:hover {
+  color: #a259ff;
+  transform: rotate(90deg);
+}
+
+
+.auth-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0;
+  gap: 1rem;
+}
+
+.auth-toggle button {
+  background-color: #1f1f1f;
+  color: #fff;
+  border: 2px solid #a259ff;
+  padding: 0.5rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: -1rem;
+  z-index: 999;
+}
+
+.auth-toggle button:hover {
+  background-color: #a259ff;
+  color: #1f1f1f;
+}
+
+.auth-toggle .active {
+  background-color: #a259ff;
+  color: #1f1f1f;
+}
+
+.main-auth {
+  background-color: black;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgb(142, 102, 252);
+  box-shadow: 0 0 20px rgba(225, 223, 229, 0.5);
+  width: 100%;
+  width: 400px;
+  font-family: 'Russo One', sans-serif;
+  position: relative;
+  transition: all 0.3s ease;
+  padding-top: 3rem;
+  margin-top: -3rem;
+  animation: fadeZoom 0.6s ease forwards;
+}
+
+.auth-form-container {
+  padding: 0;
+  width: 100%;
+  max-width: 400px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+
+.hamburger {
+  display: none;
+  font-size: 1.5rem;
+  color: rgb(142, 102, 252);
+  position: absolute;
+  right: 20px; 
+  top: 25px; 
+  cursor: pointer;
+  z-index: 1001; 
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+  flex-direction: column;
+  animation: slideInRight 0.6s ease forwards;
+}
+
+
+.close-icon {
+  font-size: 1.5rem; 
+  color:  rgb(255, 255, 255);
+  position: absolute;
+  top: 7rem;
+  right: 20px;
+  cursor: pointer;
+  z-index: 1001; 
+}
+
+
+.mobile-menu ul {
+  list-style: none; 
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  color:  rgb(142, 102, 252);
+}
+
+
+.mobile-menu li {
+  margin: 60px 0; 
+  font-size: 1.5rem; 
+  width: 100%;
+}
+
+
+.mobile-menu a {
+  color:  rgb(142, 102, 252);
+  text-decoration: none; 
+  font-weight: bold; 
+  text-transform: uppercase; 
+  padding: 1rem;
+}
+
+.mobile-menu a:hover {
+  background: #fff;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.footer-link {
+  background: none;
+  color:  rgb(142, 102, 252);
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.modal-scroll-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 0.8rem;
+  margin-top: 1rem;
+  max-height: 350px;
+  padding-right: 8px;
+}
+
+.modal-scroll-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  align-items: center;
+  background-color: #fffbfbf6;
+  padding-top: 1rem;
+}
+
+.modal-scroll-wrapper::-webkit-scrollbar {
+  width: 9px;
+}
+
+.modal-scroll-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scroll-wrapper::-webkit-scrollbar-thumb {
+  background-color: #c5c1ce;
+  border-radius: 10px;
+}
+
+.modal-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: #a084ff;
+  cursor: pointer;
+}
+
+.modal-content p {
+  color: rgb(0, 0, 0);
+  line-height: 1.6;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  margin-top: -0.5rem;
+  
+}
+
+.modal-text strong {
+  color: #a47eff;
+  font-weight: 400;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+.close-button {
+  background-color: rgb(121, 77, 240);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  cursor: pointer;
+  font-family: 'Russo One', sans-serif;
+  transition: background 0.3s ease;
+  width: 50%;
+}
+
+.close-button:hover {
+  background-color: #8b22dc;
+}
+
+.footer-link:hover {
+  color: #a855f7; 
+}
+
+.modal-button {
+  background-color: #6a0dad; 
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Russo One', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(106, 13, 173, 0.3);
+}
+
+.modal-button:hover {
+  background-color: #8b32c4;
+  transform: scale(1.03);
+}
+
+.modal-button:active {
+  background-color: #5e0ca5;
+  transform: scale(0.98);
+}
+
+.modal-button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+@media (min-width: 250px) and (max-width: 1100px) {
+
+  .App{
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body{
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .main-nav{
+    display: none;
+  }
+
+  .hamburger{
+    display: block;
+  }
+
+  .logo img {
+    font-size: 1.5rem;
+    color: rgb(142, 102, 252);
+    position: absolute;
+    left: 20px; 
+    top: 20px; 
+    z-index: 1001; 
+  }
+
+.app-header {
+  display: flex;
+  align-items: center; 
+  padding: 15px !important;
+  margin: 0;
+  background-color: #000000;
+  border-bottom: none;
+}
+
+.user-button{
+  border: none;
+  display: block;
+  margin-right: 50px;
+  top: 0;
+}
+
+.user-name {
+  display: none;
+}
+
+.user-icon {
+  font-size: 28px;
+  padding: 0;
+  margin-bottom: -1rem;
+}
+
+.site-footer {
+  background-color: #000;
+  color: rgb(142, 102, 252);
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  border-top: 1px solid rgba(142, 102, 252, 0.2);
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style: none;
+  padding: 0.5rem;
+  margin: 20px 0;
+  
+}
+
+.auth-overlay {
+  background-color: rgb(0, 0, 0);
+}
+
+
+.main-auth {
+  background-color: black;
+  border: none;
+  box-shadow: none;
+  width: 300px;
+  padding-top: 5rem;
+  margin-left: -4rem;
+  margin-top: -10rem;
+}
+
+}
+
+
+@media (min-width: 1551px) and (max-width: 2200px) {
+
+.App{
+  margin: 0 !important;
+  padding:  0 !important;
+}
+
+body{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.app-header {
+  padding-left: 25rem;
+  padding-right: 20rem;
+}
+
+}
+
+
+@media (min-width: 2201px){
+
+  .App{
+    margin: 0 !important;
+    padding:  0 !important;
+  }
+  
+  body{
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .app-header {
+    padding-left: 45rem;
+    padding-right: 40rem;
+  }
+
+  .main-auth {
+
+    margin-top: -5rem;
+    margin-left: -5rem;
+  }
+
+}

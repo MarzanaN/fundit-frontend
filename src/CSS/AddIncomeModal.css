@@ -1,0 +1,219 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 10, 10, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .modal-content-income,
+  .modal-content-savings {
+    background-color: #000;
+    color: white;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid rgb(142, 102, 252);
+    box-shadow: 0 0 20px rgba(225, 223, 229, 0.5);
+    width: 85%;
+    max-width: 450px;
+    font-family: 'Russo One', sans-serif;
+    position: relative;
+    transition: all 0.3s ease;
+    min-height: 160px; 
+    margin-top: -4rem;
+  }
+  
+  .modal-content-income.tall,
+  .modal-content-income.expanded,
+  .modal-content-savings.tall,
+  .modal-content-savings.modal-content-income.expanded {
+    min-height: 160px; 
+  }
+  
+  .modal-content-income h2,
+  .modal-content-savings h2 {
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+    color: #8a2be2;
+    text-align: center;
+  }
+  
+  label {
+    display: block;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: #d6d6f5;
+  }
+  
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    gap: 0.6rem;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: center;  
+    gap: 0.6rem;             
+  }
+  
+  .modal-buttons button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: auto;
+    min-width: 80px;
+  }
+  
+  .modal-buttons button[type="submit"] {
+    background-color: #8a2be2;
+    color: #fff;
+  }
+  
+  .modal-buttons button[type="submit"]:hover {
+    background-color: #a64cf5;
+  }
+  
+  .modal-buttons button[type="button"] {
+    background-color: #444;
+    color: #fff;
+  }
+  
+  .modal-buttons button[type="button"]:hover {
+    background-color: #666;
+  }
+
+  .success-message {
+    color: #4caf50; /* Green text for success */
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+  }
+
+input[type="text"],
+input[type="number"] {
+  width: 80%;
+  padding: 0.45rem;
+  margin-top: 0.4rem;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background-color: #2b2b3d;
+  color: #fff;
+  font-size: 0.85rem;
+  padding-left: 0.7rem; 
+}
+
+
+input:focus,
+select:focus {
+  border-color: #8a2be2;
+  outline: none;
+}
+
+
+.form-group-income,
+.form-group-category select,
+.form-group-monthly select {
+  width: 80%;
+  padding: 0.45rem;
+  margin-top: 0.4rem;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background-color: #2b2b3d;
+  color: #fff;
+  font-size: 0.85rem;
+  padding-left: 0.7rem; 
+  margin-bottom: 1rem;
+}
+
+.form-group-custom {
+    width: 93%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group-add {
+    width: 50%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+
+
+  input[type="month"] {
+  width: 80%;
+  padding: 0.45rem;
+  margin-top: 0.4rem;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background-color: #2b2b3d;
+  color: #fff;
+  font-size: 0.85rem;
+  padding-left: 0.7rem; 
+  cursor: pointer;
+}
+
+.form-group-assign{
+    width: 93%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -1rem;
+    margin-bottom: 2rem;
+  }
+  
+.modal-content-income .success-message,
+.modal-content-savings .success-message {
+    color: #4caf50; 
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+  }
+
+  @media (min-width: 250px) and (max-width: 700px){
+
+    .modal-content-income {
+      width: 80%;
+      font-size: 0.9rem;
+      padding-bottom: 2rem;
+    }
+
+    .modal-content-income h2 {
+      font-size: 1.8rem;
+      padding-bottom: 0.5rem;
+    }
+
+  }
+
+  @media (min-width: 1801px){
+
+    .modal-content-income {
+        margin-top: -15rem;
+      }
+
+  }
+
+  
+  
