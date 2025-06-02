@@ -1,11 +1,12 @@
-// src/pages/Register.js
 import { useState } from 'react';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 import '../CSS/SignIn.css'; 
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import API_BASE_URL from '../api';
 
 
 function Register() {
+  // State to hold form input values for registration fields
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -13,16 +14,19 @@ function Register() {
     password: ''
   });
 
+  // State to track current status message (loading, error, success, etc.)
   const [status, setStatus] = useState(null);
+
+  // State to toggle showing/hiding password input field
   const [showPassword, setShowPassword] = useState(false);
 
-
   async function registerUser(event) {
-    event.preventDefault();
-    setStatus('loading');
-  
+    event.preventDefault();       // Prevent default form submission behavior
+    setStatus('loading');         // Set status to loading to indicate process started
+
     try {
-      const response = await fetch('/api/register/', {
+      // Send POST request to registration endpoint with form data as JSON
+      const response = await fetch(`${API_BASE_URL}/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,26 +38,31 @@ function Register() {
           password: form.password,
         }),
       });
-  
-      const data = await response.json();
-  
+
+      const data = await response.json();  // Parse JSON response
+
       if (response.ok) {
+        // If registration successful, show success message with instructions
         setStatus(`Registration successful. Please check your inbox to activate the account 
-          (check spam / junk folder!)`);       
-        setTimeout(() => setStatus(null), 5000);   
-        console.log('User registered:', data);
-      } else {
-        console.error('Registration error:', data);
-        const firstError = data.email?.[0] || data.password?.[0] || 'Registration failed. Please try again.';
-        setStatus(firstError);
+          (check spam / junk folder!)`);
+        // Clear status message after 5 seconds
         setTimeout(() => setStatus(null), 5000);
+      } else {
+        // Log error details in console for debugging
+        console.error('Registration error:', data);
+        // Extract first error from email or password fields or show generic message
+        const firstError = data.email?.[0] || data.password?.[0] || 'Registration failed. Please try again.';
+        setStatus(firstError);              // Show error message to user
+        setTimeout(() => setStatus(null), 5000); // Clear status after 5 seconds
       }
     } catch (err) {
+      // Handle network or other fetch errors
       setStatus('Registration failed due to network error.');
-      setTimeout(() => setStatus(null), 5000);
-      console.error('Registration failed:', err.message);
+      setTimeout(() => setStatus(null), 5000);  // Clear status after 5 seconds
+      console.error('Registration failed:', err.message);  // Log error message for debugging
     }
   }
+
   
   return (
     <div className="signin-container">

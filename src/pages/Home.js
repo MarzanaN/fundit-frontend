@@ -1,4 +1,3 @@
-// src/pages/Home.js
 import React from 'react';
 import mockup from '../Fundit mockup.jpg';
 import '../CSS/Home.css';

@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import '../CSS/AddIncomeModal.css';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../api';
 
 const getCurrentMonth = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  return `${year}-${month}`;
+  const now = new Date(); // Get current date and time
+  const year = now.getFullYear(); // Extract current year (4 digits)
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Get current month (0-based), add 1, pad to 2 digits
+  return `${year}-${month}`; // Return formatted string "YYYY-MM"
 };
 
 function CreateBudgetModal({ onClose, onSuccess }) {
@@ -21,87 +22,118 @@ function CreateBudgetModal({ onClose, onSuccess }) {
   const [showSessionExpired, setShowSessionExpired] = useState(false);
   const navigate = useNavigate();
 
+   // Helper function to make authenticated fetch requests with token refresh handling
   const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
+    const fullUrl = API_BASE_URL + url;
+
+    // Get access token from local storage
     let token = localStorage.getItem('accessToken');
+    // Prepare headers including authorization
     const headers = {
-      ...options.headers,
+      ...(options.headers || {}),
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
 
-    let response = await fetch(url, { ...options, headers });
+    // Initial fetch request with current token
+    let response = await fetch(fullUrl, { ...options, headers });
 
+    // If unauthorized (401) and refresh token available, try to refresh token and retry
     if (response.status === 401 && refreshToken) {
       try {
         const newToken = await refreshToken();
         if (newToken) {
           localStorage.setItem('accessToken', newToken);
           const retryHeaders = {
-            ...options.headers,
+            ...(options.headers || {}),
             Authorization: `Bearer ${newToken}`,
             'Content-Type': 'application/json',
           };
-          response = await fetch(url, { ...options, headers: retryHeaders });
+          // Retry request with new token
+          response = await fetch(fullUrl, { ...options, headers: retryHeaders });
+        } else {
+          // Refresh failed, remove token and call session expired callback
+          localStorage.removeItem('accessToken');
+          if (typeof onSessionExpired === 'function') {
+            onSessionExpired();
+          }
         }
       } catch (error) {
+        // Error refreshing token, remove token and call session expired callback
         console.error('Error refreshing token:', error);
+        localStorage.removeItem('accessToken');
+        if (typeof onSessionExpired === 'function') {
+          onSessionExpired();
+        }
       }
     }
 
+    // If still unauthorized after retry, clear token and notify session expired
     if (response.status === 401) {
       localStorage.removeItem('accessToken');
       if (typeof onSessionExpired === 'function') {
         onSessionExpired();
       }
     }
-    return response;
-  };
 
+    return response; // Return the fetch response object
+  };
+  
+  // Show the session expired message/UI
   const handleSessionExpired = () => {
-    setShowSessionExpired(true);
+    setShowSessionExpired(true); 
   };
-
+  
+  // Handle modal close due to session expiry: logout user, hide message, and redirect to home
   const handleModalClose = () => {
-    logout();
+    logout(); 
     setShowSessionExpired(false);
-    navigate('/');
+    navigate('/'); 
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
 
+    // Validate that recurring option is selected
     if (recurringOption === '') {
       setMessage('Please select whether this budget is recurring monthly.');
       return;
     }
 
+    // Validate that a category is selected
     if (category === '') {
       setMessage('Please select a category.');
       return;
     }
 
+    // Validate custom category name if 'Custom' category is selected
     if (category === 'Custom' && !customCategory.trim()) {
       setMessage('Please enter a custom category name.');
       return;
     }
 
+    // For non-recurring budgets, ensure an assigned month is provided
     if (recurringOption === 'no' && !assignedMonth) {
       setMessage('Please assign a month for non-recurring budgets.');
       return;
     }
 
+    // Validate amount input is a valid number
     if (isNaN(parseFloat(amount))) {
       setMessage('Please enter a valid amount.');
       return;
     }
 
+    // Determine the category to send ('custom' or lowercase category name)
     const selectedCategory = category === 'Custom' ? 'custom' : category.toLowerCase();
 
+    // Determine date for the budget based on recurring option
     const dateForBudget =
       recurringOption === 'no'
-        ? `${assignedMonth}-15`
-        : `${getCurrentMonth()}-15`;
+        ? `${assignedMonth}-15` // Use assigned month for non-recurring budget
+        : `${getCurrentMonth()}-15`; // Use current month for recurring budget
 
+    // Prepare payload data for the API request
     const data = {
       date: dateForBudget,
       amount: parseFloat(amount),
@@ -111,8 +143,9 @@ function CreateBudgetModal({ onClose, onSuccess }) {
     };
 
     try {
+      // Call authenticated fetch helper with POST request to add budget
       const res = await authFetch(
-        '/api/budget/add/',
+        '/budget/add/',
         {
           method: 'POST',
           headers: {
@@ -126,9 +159,12 @@ function CreateBudgetModal({ onClose, onSuccess }) {
 
       if (res.ok) {
         setMessage('Budget added successfully!');
-        if (onSuccess) onSuccess();
+        if (onSuccess) onSuccess(); // Call success callback if provided
+
+        // Close the modal after short delay to show success message
         setTimeout(() => onClose(), 1500);
       } else {
+        // Attempt to parse error message from response
         let errorMsg = 'Unknown error occurred';
         try {
           const errData = await res.json();
@@ -136,9 +172,10 @@ function CreateBudgetModal({ onClose, onSuccess }) {
         } catch {
           errorMsg = res.statusText;
         }
-        setMessage(`Error: ${errorMsg}`);
+        setMessage(`Error: ${errorMsg}`); // Show error message to user
       }
     } catch (error) {
+      // Handle network or unexpected errors
       setMessage('Network error: Unable to submit budget.');
       console.error('Budget submit error:', error);
     }

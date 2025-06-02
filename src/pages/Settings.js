@@ -3,6 +3,7 @@ import '../CSS/Settings.css';
 import { FaUpload, FaStar, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom'; 
+import API_BASE_URL from '../api';
 
 function Settings() {
   const { user, login, refreshToken} = useAuth();
@@ -19,59 +20,86 @@ function Settings() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState('');
-  const [deleteMessageType, setDeleteMessageType] = useState(''); // 'success' or 'error'
+  const [deleteMessageType, setDeleteMessageType] = useState(''); 
   const [passwordUpdateMessage, setPasswordUpdateMessage] = useState('');
-  const [passwordMessageType, setPasswordMessageType] = useState(''); // 'success' or 'error'  
+  const [passwordMessageType, setPasswordMessageType] = useState(''); 
   const [message, setMessage] = useState('');
   const { logout} = useAuth();
   const navigate = useNavigate();
   const [showSessionExpired, setShowSessionExpired] = useState(false);
+  const { refreshUser } = useAuth();
 
+  /* ────────────────────────────────
+     AUTH FETCH LOGIC
+   ──────────────────────────────── */
 
+  // Helper function to make authenticated fetch requests with token refresh handling
   const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
+    const fullUrl = API_BASE_URL + url;
+
+    // Get access token from local storage
     let token = localStorage.getItem('accessToken');
+    // Prepare headers including authorization
     const headers = {
-      ...options.headers,
+      ...(options.headers || {}),
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
 
-    let response = await fetch(url, { ...options, headers });
+    // Initial fetch request with current token
+    let response = await fetch(fullUrl, { ...options, headers });
 
+    // If unauthorized (401) and refresh token available, try to refresh token and retry
     if (response.status === 401 && refreshToken) {
       try {
         const newToken = await refreshToken();
         if (newToken) {
           localStorage.setItem('accessToken', newToken);
           const retryHeaders = {
-            ...options.headers,
+            ...(options.headers || {}),
             Authorization: `Bearer ${newToken}`,
             'Content-Type': 'application/json',
           };
-          response = await fetch(url, { ...options, headers: retryHeaders });
+          // Retry request with new token
+          response = await fetch(fullUrl, { ...options, headers: retryHeaders });
+        } else {
+          // Refresh failed, remove token and call session expired callback
+          localStorage.removeItem('accessToken');
+          if (typeof onSessionExpired === 'function') {
+            onSessionExpired();
+          }
         }
       } catch (error) {
+        // Error refreshing token, remove token and call session expired callback
         console.error('Error refreshing token:', error);
+        localStorage.removeItem('accessToken');
+        if (typeof onSessionExpired === 'function') {
+          onSessionExpired();
+        }
       }
     }
 
+    // If still unauthorized after retry, clear token and notify session expired
     if (response.status === 401) {
       localStorage.removeItem('accessToken');
       if (typeof onSessionExpired === 'function') {
         onSessionExpired();
       }
     }
-    return response;
-  };
 
+    return response; // Return the fetch response object
+  };
+  
+  // Show the session expired message/UI
   const handleSessionExpired = () => {
-    setShowSessionExpired(true);
+    setShowSessionExpired(true); 
   };
-
+  
+  // Handle modal close due to session expiry: logout user, hide message, and redirect to home
   const handleModalClose = () => {
-    logout();
+    logout(); 
     setShowSessionExpired(false);
-    navigate('/');
+    navigate('/'); 
   };
 
 
@@ -86,88 +114,64 @@ function Settings() {
   });
 
 
+    /* ────────────────────────────────
+     FETCH USER DATA FOR SETTINGS PAGE
+   ──────────────────────────────── */
 
   useEffect(() => {
+    // Define async function to fetch user data from API
     const fetchUserData = async () => {
       try {
+        // Make authenticated GET request to fetch user details
         const res = await authFetch(
-          '/api/user/',
+          '/user/',
           { method: 'GET', headers: { 'Content-Type': 'application/json' } },
-          refreshToken,
-          handleSessionExpired
+          refreshToken,           // Token used for refreshing authentication
+          handleSessionExpired    // Callback to handle session expiration
         );
-  
+
+        // Check if response is not successful, throw error to trigger catch block
         if (!res.ok) {
           throw new Error('Failed to fetch user data');
         }
-  
+
+        // Parse response JSON data
         const data = await res.json();
-  
+
+        // Format date of birth by removing time part (ISO string to YYYY-MM-DD)
         const formattedDob = data.dob ? data.dob.split('T')[0] : '';
-  
+
+        // Update form data state with fetched user information, use defaults if missing
         setFormData({
           firstName: data.first_name || '',
           lastName: data.last_name || '',
           email: data.email || '',
-          password: '',
+          password: '',           // Password left empty for security
           sex: data.sex || '',
-          dob: formattedDob,
-          currency: data.currency || 'GBP',
+          dob: formattedDob,      // Formatted date of birth
+          currency: data.currency || 'GBP', // Default currency is GBP
         });
       } catch (error) {
+        // Log error if fetching user data fails
         console.error('Error fetching user data:', error);
       }
     };
-  
+
+    // Call the async fetchUserData function once when refreshToken changes
     fetchUserData();
   }, [refreshToken]);
-  
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    try {
-      const response = await authFetch(
-        '/api/settings/update/',
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            sex: formData.sex,
-            dob: formData.dob || null,
-            currency: formData.currency,
-          }),
-        },
-        refreshToken,
-        handleSessionExpired
-      );
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(`Update failed: ${errorData.detail || 'Unknown error'}`);
-        return;
-      }
-  
-      await response.json();
-      setShowConfirmationMessage(true);
-      setTimeout(() => setShowConfirmationMessage(false), 3000);
-  
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('An error occurred while updating profile.');
-    }
-  };
-  
-  
+  /* ────────────────────────────────
+     UPDATE AND SUBMIT LOGIC
+   ──────────────────────────────── */
 
   useEffect(() => {
     if (user) {
+      // Format date of birth to YYYY-MM-DD or empty string if no DOB
       const formattedDob = user.dob ? user.dob.split('T')[0] : '';
-  
+
+      // Format sex field to standardized values or keep original if unknown
       let formattedSex = '';
       if (user.sex) {
         const lowerSex = user.sex.toLowerCase();
@@ -175,46 +179,53 @@ function Settings() {
         else if (lowerSex === 'female' || lowerSex === 'f') formattedSex = 'Female';
         else formattedSex = user.sex;
       }
-  
+
+      // Format currency code to uppercase or default to 'GBP'
       const formattedCurrency = user.currency ? user.currency.toUpperCase() : 'GBP';
-  
+
+      // Set formData state with user's profile information or sensible defaults
       setFormData({
         firstName: user.first_name || (user.name ? user.name.split(' ')[0] : ''),
         lastName: user.last_name || (user.name ? user.name.split(' ').slice(1).join(' ') : ''),
         email: user.email || '',
-        password: '',
+        password: '',   // Clear password field by default
         sex: formattedSex,
         dob: formattedDob,
         currency: formattedCurrency,
       });
     }
   }, [user]);
-  
+
 
   const handleUpdatePassword = async () => {
+    // Validate that current and new password fields are filled
     if (!currentPassword || !newPassword) {
       setPasswordUpdateMessage('Please complete all required fields.');
       setPasswordMessageType('error');
+      // Clear message after 4 seconds
       setTimeout(() => {
         setPasswordUpdateMessage('');
         setPasswordMessageType('');
       }, 4000);
       return;
     }
-  
+
+    // Validate new password length is at least 8 characters
     if (newPassword.length < 8) {
       setPasswordUpdateMessage('New password must be at least 8 characters.');
       setPasswordMessageType('error');
+      // Clear message after 4 seconds
       setTimeout(() => {
         setPasswordUpdateMessage('');
         setPasswordMessageType('');
       }, 4000);
       return;
     }
-  
+
     try {
+      // Make authenticated POST request to change password endpoint
       const response = await authFetch(
-        '/api/settings/change-password/',
+        '/settings/change-password/',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -226,7 +237,8 @@ function Settings() {
         refreshToken,
         handleSessionExpired
       );
-  
+
+      // Handle error response and display error message
       if (!response.ok) {
         const errorData = await response.json();
         setPasswordUpdateMessage(
@@ -239,18 +251,21 @@ function Settings() {
         }, 4000);
         return;
       }
-  
+
+      // On success, show success message and clear password inputs
       setPasswordUpdateMessage('Password updated successfully!');
       setPasswordMessageType('success');
       setCurrentPassword('');
       setNewPassword('');
-  
+
+      // Hide success message and overlay after 2 seconds
       setTimeout(() => {
         setPasswordUpdateMessage('');
         setPasswordMessageType('');
         setShowChangePasswordOverlay(false);
       }, 2000);
     } catch (error) {
+      // Handle network or unexpected errors
       setPasswordUpdateMessage('An error occurred while updating password.');
       setPasswordMessageType('error');
       setTimeout(() => {
@@ -259,44 +274,100 @@ function Settings() {
       }, 4000);
     }
   };
-  
-  
-  
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Update formData state dynamically for changed input field
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
-  
+
 
   const handleUpdate = () => {
+    // Show confirmation message for 3 seconds
     setShowConfirmationMessage(true);
     setTimeout(() => setShowConfirmationMessage(false), 3000);
   };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault(); // Prevent default form submission behavior
+
+      try {
+        // Make authenticated PATCH request to update user settings
+        const response = await authFetch(
+          '/settings/update/',
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            // Send updated user data from formData state
+            body: JSON.stringify({
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              email: formData.email,
+              sex: formData.sex,
+              dob: formData.dob || null,    // Use null if dob is empty
+              currency: formData.currency,
+            }),
+          },
+          refreshToken,          // Token to refresh authentication if needed
+          handleSessionExpired   // Callback for handling expired session
+        );
+
+        // If response is not ok, show alert with error detail
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(`Update failed: ${errorData.detail || 'Unknown error'}`);
+          return; // Exit early on failure
+        }
+
+        await response.json();   // Parse response JSON (not used here)
+        await refreshUser();     // Refresh user data after successful update
+
+        // Show confirmation message on successful update
+        setShowConfirmationMessage(true);
+        // Hide confirmation message after 3 seconds
+        setTimeout(() => setShowConfirmationMessage(false), 3000);
+
+      } catch (error) {
+        // Log and alert on any network or unexpected errors
+        console.error('Error updating profile:', error);
+        alert('An error occurred while updating profile.');
+      }
+    };
+
   
+  /* ────────────────────────────────
+     DELETE ACCOUNT LOGIC
+   ──────────────────────────────── */
+
   const handleDeleteAccount = async () => {
+    // Check if "Other" is selected as delete reason and if otherReason input is empty
     const isOtherReasonSelected = deleteReason === "Other";
     const isOtherReasonEmpty = isOtherReasonSelected && otherReason.trim() === "";
-  
+
+    // Check if any required field is incomplete: reason, confirmation, or rating
     const isIncomplete =
       !deleteReason ||
       isOtherReasonEmpty ||
       !confirmDelete ||
       rating === 0;
-  
+
+    // If incomplete, show error message and clear it after 2 seconds
     if (isIncomplete) {
       setDeleteMessage("Please complete all required fields.");
       setDeleteMessageType("error");
-  
+
       setTimeout(() => {
         setDeleteMessage("");
         setDeleteMessageType("");
       }, 2000);
       return;
     }
-  
+
+    // Prepare payload with form data to send to backend
     const payload = {
       delete_reason: deleteReason,
       other_reason: otherReason,
@@ -304,12 +375,14 @@ function Settings() {
       rating,
       confirm: confirmDelete,
     };
-  
+
+    // Debug log the payload being sent
     console.log("Sending payload:", payload);
-  
+
     try {
+      // Make authenticated POST request to delete account endpoint
       const response = await authFetch(
-        '/api/delete-account/',
+        '/delete-account/',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -318,37 +391,41 @@ function Settings() {
         refreshToken,
         handleSessionExpired
       );
-  
+
+      // Parse response JSON data
       const data = await response.json();
-  
+
+      // If deletion successful, show success message, log out, and redirect after 2 seconds
       if (response.ok) {
         setDeleteMessage("Your account has been successfully deleted.");
         setDeleteMessageType("success");
-  
+
         setTimeout(() => {
           setDeleteMessage("");
           setDeleteMessageType("");
           setShowDeleteOverlay(false);
-  
+
           logout();
-  
+
           navigate('/');
         }, 2000);
       } else {
+        // If response not OK, throw error with message from backend or generic message
         throw new Error(data.error || "Failed to delete account");
       }
     } catch (error) {
+      // Handle errors, display error message, and clear it after 2 seconds
       console.error("Delete account error:", error.message);
       setDeleteMessage(error.message || "Failed to delete account.");
       setDeleteMessageType("error");
-  
+
       setTimeout(() => {
         setDeleteMessage("");
         setDeleteMessageType("");
       }, 2000);
     }
   };
-  
+
   
   return (
     <div className="settings-container">
@@ -466,8 +543,7 @@ function Settings() {
           Delete account
         </div>
       </div>
-  
-      {/* Overlay: Settings Updated */}
+
       {showConfirmationMessage && (
         <div className="overlay-message">
           <div className="overlay-content-message">
@@ -478,7 +554,6 @@ function Settings() {
         </div>
       )}
 
-      {/* Overlay: Delete Account */}
       {showDeleteOverlay && (
         <div className="overlay-delete">
           <div className="overlay-content-delete">
@@ -557,7 +632,6 @@ function Settings() {
         </div>
       )}
 
-      {/* Overlay: Change Password */}
       {showChangePasswordOverlay && (
         <div className="overlay-password">
           <div className="overlay-content-password">

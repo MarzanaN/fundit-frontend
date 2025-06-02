@@ -16,6 +16,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import '../CSS/Features.css';
 
+// Sample expense data with categories and their values
 const expenseData = [
   { name: 'Mortgage', value: 800 },
   { name: 'Food', value: 300 },
@@ -24,16 +25,22 @@ const expenseData = [
   { name: 'Transport', value: 100 }
 ];
 
+// Colors used for the pie chart slices or labels
 const COLORS = ['#8e66fc', '#ffffff', '#6c63ff', '#00bfff', '#483d8b'];
 
+// Custom label renderer for pie chart slices
 const renderCustomLabel = ({
     cx, cy, midAngle, outerRadius, index, name, value
   }) => {
-    const RADIAN = Math.PI / 180;
-    const spacing = 35; 
-    const radius = outerRadius + spacing;
+    const RADIAN = Math.PI / 180; // Convert degrees to radians for trig functions
+    const spacing = 35;           // Distance to offset label from pie slice edge
+    const radius = outerRadius + spacing; // Radius for label position outside pie slice
+
+    // Calculate label coordinates using trigonometry based on midAngle
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    // Select fill color for label based on slice index, cycling through COLORS array
     const fill = COLORS[index % COLORS.length];
   
     return (
@@ -41,28 +48,34 @@ const renderCustomLabel = ({
         x={x}
         y={y}
         fill={fill}
+        // Align text to start or end depending on position relative to center
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
         fontSize="12px"
       >
+        {/* Display category name above the value */}
         <tspan x={x} dy="-0.5em">{name}</tspan>
+        {/* Display value with £ currency symbol below the name */}
         <tspan x={x} dy="1.2em">£{value}</tspan>
       </text>
     );
   };
-  
 
+// Sample budget data showing category budgets and current spend
 const budgetData = [
   { category: 'Food', budget: 400, current: 300 },
   { category: 'Transport', budget: 150, current: 100 },
   { category: 'Entertainment', budget: 250, current: 200 },
 ];
 
+// Features component initialization
 function Features() {
+  // Initialize Animate On Scroll (AOS) library with 1 second duration for animations
   useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
 
+  
   return (
     <div className="features-page">
       <section className="features-hero" data-aos="fade-up">

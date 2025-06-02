@@ -379,7 +379,7 @@
         background-color: #000000;
         border-radius: 12px;
         padding: 1.2rem;
-        margin: 0 auto 2rem auto; /
+        margin: 0 auto 2rem auto; 
         box-shadow: 0 0 15px rgba(76, 75, 78, 0.701);
         transition: transform 0.2s;
         width: 250px;
@@ -520,6 +520,13 @@
         cursor: pointer;
       }
 
+
+    select, input[type="text"],  input[type="date"], input[type="number"] {
+      -webkit-appearance: none;  
+      -moz-appearance: none;    
+      appearance: none;
+
+    }
 
 
   

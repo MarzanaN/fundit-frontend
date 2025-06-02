@@ -4,11 +4,11 @@ import { useState } from 'react';
 import '../CSS/App.css';
 
 function Footer() {
-  const { user } = useAuth();
-  const [showPrivacy, setShowPrivacy] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
+  const { user } = useAuth();  // Get current user from context to determine nav links
+  const [showPrivacy, setShowPrivacy] = useState(false);  // Show/hide Privacy Policy modal
+  const [showTerms, setShowTerms] = useState(false);      // Show/hide Terms of Service modal
   const navigate = useNavigate();
-
+  
   return (
     <footer className="site-footer">
       <h3>Fundit</h3>
@@ -31,6 +31,7 @@ function Footer() {
         )}
       </ul>
 
+      {/* Footer action links */}
       <div className="footer-links">
         <button onClick={() => setShowPrivacy(true)} className="footer-link">Privacy Policy</button>
         <button onClick={() => setShowTerms(true)} className="footer-link">Terms of Service</button>

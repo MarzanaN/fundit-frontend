@@ -1,39 +1,66 @@
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(10, 10, 10, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-    padding-top: 3%;
-  }
-  
-  .modal-content {
-    background-color: #000000;
-    color: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid rgb(142, 102, 252);
-    box-shadow: 0 0 20px rgba(225, 223, 229, 0.5);
-    width: 85%;
-    max-width: 450px;
-    font-family: 'Russo One', sans-serif;
-    position: relative;
-    transition: all 0.3s ease;
-    margin-top: -5rem;
-  }
-  
-  .modal-content.tall {
-    min-height: 300px;
-  }
-  
-  .modal-content.expanded {
-    min-height: 500px;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 10, 10, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;   
+  padding-top: 60px;         
+  padding-bottom: 60px;    
+  overflow-y: auto; 
+  z-index: 999;
+}
+
+.modal-content {
+  background-color: #000000;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgb(142, 102, 252);
+  box-shadow: 0 0 20px rgba(225, 223, 229, 0.5);
+  width: 85%;
+  max-width: 450px;
+  font-family: 'Russo One', sans-serif;
+  position: relative;
+  transition: all 0.3s ease;
+  margin-top: 100px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.modal-content.tall {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.modal-content.expanded {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.modal-content.expanded::-webkit-scrollbar {
+  width: 15px; 
+}
+
+.modal-content.expanded::-webkit-scrollbar-track {
+  background: #1e1e2f; 
+  border-radius: 10px;
+}
+
+.modal-content.expanded::-webkit-scrollbar-thumb {
+  background-color: #8a2be2; 
+  border-radius: 10px;
+  border: 2px solid #1e1e2f; 
+}
+
+.modal-content.expanded::-webkit-scrollbar-thumb:hover {
+  background-color: #a64bff;
+}
+
   
   .modal-content h2 {
     margin-top: 0;
@@ -190,7 +217,7 @@
   .confirmation-buttons.row button:hover {
     background-color: #a07dfc;
   }
-  
+
   
   .status-message {
     margin-top: 1rem;
@@ -211,17 +238,38 @@
     margin-top: 0.2rem;
     user-select: none;
   }
+
+select, input[type="text"],  input[type="date"], input[type="number"] {
+  -webkit-appearance: none; 
+  -moz-appearance: none;     
+  appearance: none;
+}
   
 
   @media (min-width: 250px) and (max-width: 700px){
 
     .modal-content {
-      width: 80%;
+      width: 86%;
       font-size: 0.9rem;
       padding-bottom: 2rem;
       padding-left: 1rem;
       padding-right: 1rem;
+      max-width: none;           
+      padding: 1.2rem;
+      padding-top: 2rem;
+      margin-top: 0;
     }
+
+    .modal-overlay {
+    padding-top: 100px;         
+    padding-bottom: 100px;      
+  }
+
+    .modal-content.tall,
+  .modal-content.expanded {
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+  }
 
     .category-label {
       font-size: 0.8rem;
@@ -238,10 +286,12 @@
     }
 
     .edit-block input {
-      width: 58%;
+      width: 80%;
+      margin-left: -1rem;
     }
     .update-entry-btn{
-      width: 85%;
+      width: 110%;
+      margin-left: -1rem;
     }
 
     .edit-block {
@@ -254,6 +304,10 @@
 
     .income-entry {
       width: 93%;
+    }
+
+    .recurring-label{
+      font-size: 10px;
     }
 
   }

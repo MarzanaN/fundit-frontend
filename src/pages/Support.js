@@ -5,6 +5,7 @@ import 'aos/dist/aos.css';
 import '../CSS/Support.css';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../api';
 
 function Support() {
   const { user, refreshToken, logout } = useAuth(); 
@@ -22,53 +23,133 @@ function Support() {
     }
   }, [user]);
 
+    /* ────────────────────────────────
+     AUTH FETCH LOGIC
+   ──────────────────────────────── */
+
+  // Helper function to make authenticated fetch requests with token refresh handling
   const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
+    const fullUrl = API_BASE_URL + url;
+
+    // Get access token from local storage
     let token = localStorage.getItem('accessToken');
+    // Prepare headers including authorization
     const headers = {
-      ...options.headers,
+      ...(options.headers || {}),
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
 
-    let response = await fetch(url, { ...options, headers });
+    // Initial fetch request with current token
+    let response = await fetch(fullUrl, { ...options, headers });
 
+    // If unauthorized (401) and refresh token available, try to refresh token and retry
     if (response.status === 401 && refreshToken) {
       try {
         const newToken = await refreshToken();
         if (newToken) {
           localStorage.setItem('accessToken', newToken);
           const retryHeaders = {
-            ...options.headers,
+            ...(options.headers || {}),
             Authorization: `Bearer ${newToken}`,
             'Content-Type': 'application/json',
           };
-          response = await fetch(url, { ...options, headers: retryHeaders });
+          // Retry request with new token
+          response = await fetch(fullUrl, { ...options, headers: retryHeaders });
+        } else {
+          // Refresh failed, remove token and call session expired callback
+          localStorage.removeItem('accessToken');
+          if (typeof onSessionExpired === 'function') {
+            onSessionExpired();
+          }
         }
       } catch (error) {
+        // Error refreshing token, remove token and call session expired callback
         console.error('Error refreshing token:', error);
+        localStorage.removeItem('accessToken');
+        if (typeof onSessionExpired === 'function') {
+          onSessionExpired();
+        }
       }
     }
 
+    // If still unauthorized after retry, clear token and notify session expired
     if (response.status === 401) {
       localStorage.removeItem('accessToken');
       if (typeof onSessionExpired === 'function') {
         onSessionExpired();
       }
     }
-    return response;
-  };
 
+    return response; // Return the fetch response object
+  };
+  
+  // Show the session expired message/UI
   const handleSessionExpired = () => {
-    setShowSessionExpired(true);
+    setShowSessionExpired(true); 
+  };
+  
+  // Handle modal close due to session expiry: logout user, hide message, and redirect to home
+  const handleModalClose = () => {
+    logout(); 
+    setShowSessionExpired(false);
+    navigate('/'); 
   };
 
-  const handleModalClose = () => {
-    logout();
-    setShowSessionExpired(false);
-    navigate('/');
-  };
 
   useEffect(() => {
+    // Whenever 'status' changes, check if it contains 'success' or 'fail'
+    if (status.toLowerCase().includes('success') || status.toLowerCase().includes('fail')) {
+      // Set a timer to clear the status message after 4 seconds
+      const timer = setTimeout(() => {
+        setStatus('');  // Clear the status message
+      }, 4000);
+
+      // Cleanup function to clear the timer if component unmounts or status changes
+      return () => clearTimeout(timer);
+    }
+  }, [status]);  // Run this effect only when 'status' changes
+
+
+  const handleSubmit = async () => {
+    setStatus('Sending...');  // Show sending status immediately
+
+    try {
+      // Call the custom authFetch function to POST support message data
+      const response = await authFetch(
+        '/support/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          // Send form data as JSON in the request body
+          body: JSON.stringify({ name, email, issue_type: issueType, message }),
+        },
+        refreshToken,        // Pass refresh token for auth handling
+        handleSessionExpired // Callback to handle expired sessions
+      );
+
+      if (response.ok) {
+        // If response is OK, update status to success message
+        setStatus('Message sent successfully!');
+        // Clear the input fields after successful send
+        setName('');
+        setEmail(user?.email || '');  // Reset email to user email or empty
+        setIssueType('');
+        setMessage('');
+      } else {
+        // If response not OK, throw error to trigger catch block
+        throw new Error('Failed to send');
+      }
+    } catch (error) {
+      // Log the error for debugging
+      console.error(error);
+      // Set status to failure message
+      setStatus('Failed to send message.');
+    }
+  };
+
+
+    useEffect(() => {
     AOS.init({ duration: 1000 });
     if (user) {
       document.body.style.margin = '0';
@@ -82,44 +163,6 @@ function Support() {
     };
   }, [user]);
 
-  useEffect(() => {
-    if (status.toLowerCase().includes('success') || status.toLowerCase().includes('fail')) {
-      const timer = setTimeout(() => {
-        setStatus('');
-      }, 4000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
-
-  const handleSubmit = async () => {
-    setStatus('Sending...');
-    try {
-      const response = await authFetch(
-        '/api/support/',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, issue_type: issueType, message }),
-        },
-        refreshToken,
-        handleSessionExpired
-      );
-
-      if (response.ok) {
-        setStatus('Message sent successfully!');
-        setName('');
-        setEmail(user?.email || '');
-        setIssueType('');
-        setMessage('');
-      } else {
-        throw new Error('Failed to send');
-      }
-    } catch (error) {
-      console.error(error);
-      setStatus('Failed to send message.');
-    }
-  };
 
   return (
     <SupportForm

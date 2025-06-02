@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../CSS/AddIncomeModal.css';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../api';
 
 const getCurrentMonth = () => {
   const now = new Date();
@@ -25,96 +26,133 @@ function SavingsGoalsModal({ onClose, onSuccess }) {
   const { logout} = useAuth();
   const navigate = useNavigate();
   
-    const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
-      let token = localStorage.getItem('accessToken');
-      const headers = {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-    
-      let response = await fetch(url, { ...options, headers });
-    
-      if (response.status === 401 && refreshToken) {
-        try {
-          const newToken = await refreshToken();
-          if (newToken) {
-            localStorage.setItem('accessToken', newToken);
-            const retryHeaders = {
-              ...options.headers,
-              Authorization: `Bearer ${newToken}`,
-              'Content-Type': 'application/json',
-            };
-            response = await fetch(url, { ...options, headers: retryHeaders });
-          }
-        } catch (error) {
-          console.error('Error refreshing token:', error);
-        }
-      }
-    
-      if (response.status === 401) {
-        localStorage.removeItem('accessToken');
-        if (typeof onSessionExpired === 'function') {
-          onSessionExpired(); 
-        }
-      }
-      return response;
-    };
-    
-    const handleSessionExpired = () => {
-      setShowSessionExpired(true); 
-    };
-    
-    const handleModalClose = () => {
-      logout(); 
-      setShowSessionExpired(false);
-      navigate('/'); 
+  /* ────────────────────────────────
+     AUTH FETCH LOGIC
+   ──────────────────────────────── */
+
+   // Helper function to make authenticated fetch requests with token refresh handling
+  const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
+    const fullUrl = API_BASE_URL + url;
+
+    // Get access token from local storage
+    let token = localStorage.getItem('accessToken');
+    // Prepare headers including authorization
+    const headers = {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     };
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-    
-      const data = {
-        category: category.toLowerCase(), 
-        goal_name: goalName,
-        goal_amount: parseFloat(amount),
-        current_amount: 0.00,
-        deadline_ongoing: isOngoing, 
-        deadline: isOngoing === 'no' ? `${date}-15` : null,
-      };
-    
+    // Initial fetch request with current token
+    let response = await fetch(fullUrl, { ...options, headers });
+
+    // If unauthorized (401) and refresh token available, try to refresh token and retry
+    if (response.status === 401 && refreshToken) {
       try {
-        const res = await authFetch(
-          '/api/savings-goal/add/',
-          {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-          refreshToken,
-          handleSessionExpired
-        );
-    
-        if (res.ok) {
-          setMessage('Savings Goal added successfully!');
-          setTimeout(() => onClose(), 1500);
-          onSuccess();
+        const newToken = await refreshToken();
+        if (newToken) {
+          localStorage.setItem('accessToken', newToken);
+          const retryHeaders = {
+            ...(options.headers || {}),
+            Authorization: `Bearer ${newToken}`,
+            'Content-Type': 'application/json',
+          };
+          // Retry request with new token
+          response = await fetch(fullUrl, { ...options, headers: retryHeaders });
         } else {
-          let errorMsg = 'Unknown error occurred';
-          try {
-            const errData = await res.json();
-            errorMsg = errData.detail || JSON.stringify(errData);
-          } catch {
-            errorMsg = res.statusText;
+          // Refresh failed, remove token and call session expired callback
+          localStorage.removeItem('accessToken');
+          if (typeof onSessionExpired === 'function') {
+            onSessionExpired();
           }
-          setMessage(`Error: ${errorMsg}`);
         }
       } catch (error) {
-        setMessage('Network error: Unable to submit goal.');
+        // Error refreshing token, remove token and call session expired callback
+        console.error('Error refreshing token:', error);
+        localStorage.removeItem('accessToken');
+        if (typeof onSessionExpired === 'function') {
+          onSessionExpired();
+        }
       }
+    }
+
+    // If still unauthorized after retry, clear token and notify session expired
+    if (response.status === 401) {
+      localStorage.removeItem('accessToken');
+      if (typeof onSessionExpired === 'function') {
+        onSessionExpired();
+      }
+    }
+
+    return response; // Return the fetch response object
+  };
+  
+  // Show the session expired message/UI
+  const handleSessionExpired = () => {
+    setShowSessionExpired(true); 
+  };
+  
+  // Handle modal close due to session expiry: logout user, hide message, and redirect to home
+  const handleModalClose = () => {
+    logout(); 
+    setShowSessionExpired(false);
+    navigate('/'); 
+  };
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Prepare the data object for the POST request
+    const data = {
+      category: category.toLowerCase(), // Convert category to lowercase for consistency
+      goal_name: goalName,               // Name of the savings goal
+      goal_amount: parseFloat(amount),  // Convert amount string to a float number
+      current_amount: 0.00,              // Initialize current amount to zero
+      deadline_ongoing: isOngoing,       // Flag indicating if deadline is ongoing
+      deadline: isOngoing === 'no' ? `${date}-15` : null, // Set deadline date if not ongoing
     };
+
+    try {
+      // Make authenticated POST request to add a new savings goal
+      const res = await authFetch(
+        '/savings-goal/add/',
+        {
+          method: 'POST',
+          body: JSON.stringify(data),      // Send data as JSON string
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+        refreshToken,                      // Token used for refreshing authentication
+        handleSessionExpired              // Callback for session expiration handling
+      );
+
+      if (res.ok) {
+        // If request is successful, show success message
+        setMessage('Savings Goal added successfully!');
+        setTimeout(() => {
+          onSuccess();   // Callback for post-success actions (e.g., refresh UI)
+          onClose();     // Close the modal or form
+          setMessage(''); // Clear the message after closing (optional)
+        }, 1500);
+      } else {
+        // If response is not OK, handle error message parsing
+        let errorMsg = 'Unknown error occurred';
+        try {
+          const errData = await res.json();
+          errorMsg = errData.detail || JSON.stringify(errData);
+        } catch {
+          errorMsg = res.statusText; // Fallback to status text if JSON parsing fails
+        }
+        setMessage(`Error: ${errorMsg}`); // Show error message to user
+      }
+    } catch (error) {
+      // Handle network or fetch errors
+      setMessage('Network error: Unable to submit goal.');
+    }
+  };
+
     
   
   return (

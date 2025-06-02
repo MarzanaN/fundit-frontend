@@ -3,24 +3,38 @@ import '../CSS/UpdateIncomeModal.css';
 import { FiEdit3, FiTrash2 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../api';
 
+
+// Function to generate an array of all months for the current year in 'YYYY-MM' format
 const getAllMonths = () => {
-  const months = [];
-  const now = new Date();
-  const year = now.getFullYear();
+  const months = [];               // Initialize empty array to hold months
+  const now = new Date();          // Get current date
+  const year = now.getFullYear();  // Extract current year (e.g., 2025)
+
+  // Loop through all 12 months (1 to 12)
   for (let m = 1; m <= 12; m++) {
+    // Format month as 'YYYY-MM', padding month with leading zero if needed
     months.push(`${year}-${String(m).padStart(2, '0')}`);
   }
-  return months;
+
+  return months;  // Return array of months like ['2025-01', '2025-02', ..., '2025-12']
 };
 
+
+// React component for selecting a month from a dropdown
 const MonthSelector = ({ selectedMonth, onChange }) => {
-  const months = getAllMonths();
+  const months = getAllMonths(); // Get array of months for current year
+
   return (
     <select value={selectedMonth} onChange={onChange}>
+      {/* Default option prompting user to select a month */}
       <option value="">-- Select Month --</option>
+
+      {/* Map each month string to an option element */}
       {months.map((month) => (
         <option key={month} value={month}>
+          {/* Display month in short format with year, e.g. 'Jan 2025' */}
           {new Date(`${month}-01`).toLocaleString('default', {
             month: 'short',
             year: 'numeric',
@@ -30,6 +44,7 @@ const MonthSelector = ({ selectedMonth, onChange }) => {
     </select>
   );
 };
+
 
 function UpdateExpenseModal({ onClose, onSuccess }) {
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -46,46 +61,74 @@ function UpdateExpenseModal({ onClose, onSuccess }) {
   const { logout} = useAuth();
   const navigate = useNavigate();
   
-    const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
-      let token = localStorage.getItem('accessToken');
-      const headers = {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-    
-      let response = await fetch(url, { ...options, headers });
-    
-      if (response.status === 401 && refreshToken) {
-        try {
-          const newToken = await refreshToken();
-          if (newToken) {
-            localStorage.setItem('accessToken', newToken);
-            const retryHeaders = {
-              ...options.headers,
-              Authorization: `Bearer ${newToken}`,
-              'Content-Type': 'application/json',
-            };
-            response = await fetch(url, { ...options, headers: retryHeaders });
+
+  /* ────────────────────────────────
+     AUTH FETCH LOGIC
+  ──────────────────────────────── */
+
+  // Helper function to make authenticated fetch requests with token refresh handling
+  const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
+    const fullUrl = API_BASE_URL + url;
+
+    // Get access token from local storage
+    let token = localStorage.getItem('accessToken');
+    // Prepare headers including authorization
+    const headers = {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    // Initial fetch request with current token
+    let response = await fetch(fullUrl, { ...options, headers });
+
+    // If unauthorized (401) and refresh token available, try to refresh token and retry
+    if (response.status === 401 && refreshToken) {
+      try {
+        const newToken = await refreshToken();
+        if (newToken) {
+          localStorage.setItem('accessToken', newToken);
+          const retryHeaders = {
+            ...(options.headers || {}),
+            Authorization: `Bearer ${newToken}`,
+            'Content-Type': 'application/json',
+          };
+          // Retry request with new token
+          response = await fetch(fullUrl, { ...options, headers: retryHeaders });
+        } else {
+          // Refresh failed, remove token and call session expired callback
+          localStorage.removeItem('accessToken');
+          if (typeof onSessionExpired === 'function') {
+            onSessionExpired();
           }
-        } catch (error) {
-          console.error('Error refreshing token:', error);
         }
-      }
-    
-      if (response.status === 401) {
+      } catch (error) {
+        // Error refreshing token, remove token and call session expired callback
+        console.error('Error refreshing token:', error);
         localStorage.removeItem('accessToken');
         if (typeof onSessionExpired === 'function') {
-          onSessionExpired(); 
+          onSessionExpired();
         }
       }
-      return response;
-    };
-    
+    }
+
+    // If still unauthorized after retry, clear token and notify session expired
+    if (response.status === 401) {
+      localStorage.removeItem('accessToken');
+      if (typeof onSessionExpired === 'function') {
+        onSessionExpired();
+      }
+    }
+
+    return response; // Return the fetch response object
+  };
+  
+    // Show the session expired message/UI
     const handleSessionExpired = () => {
       setShowSessionExpired(true); 
     };
     
+    // Handle modal close due to session expiry: logout user, hide message, and redirect to home
     const handleModalClose = () => {
       logout(); 
       setShowSessionExpired(false);
@@ -93,14 +136,17 @@ function UpdateExpenseModal({ onClose, onSuccess }) {
     };
 
 
+    useEffect(() => {
+      if (message) {
+        const timer = setTimeout(() => setMessage(''), 3000);
+        return () => clearTimeout(timer);
+      }
+    }, [message]);
 
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(''), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
 
+  /* ────────────────────────────────
+     FETCH BUDGET ENTRIES 
+  ──────────────────────────────── */
 
   useEffect(() => {
     if (!selectedMonth || entryType !== 'budget') return;
@@ -111,7 +157,7 @@ function UpdateExpenseModal({ onClose, onSuccess }) {
   
       try {
         const res = await authFetch(
-          `/api/budgets/?month=${selectedMonth}`,
+          `/budgets/?month=${selectedMonth}`,
           { method: 'GET' },
           refreshToken,
           handleSessionExpired
@@ -136,6 +182,10 @@ function UpdateExpenseModal({ onClose, onSuccess }) {
   }, [selectedMonth, entryType, refreshToken]);
   
 
+  /* ────────────────────────────────
+     FETCH EXPENSE ENTRIES
+  ──────────────────────────────── */
+
   useEffect(() => {
     if (!selectedMonth || entryType !== 'expense') return;
   
@@ -145,7 +195,7 @@ function UpdateExpenseModal({ onClose, onSuccess }) {
   
       try {
         const res = await authFetch(
-          `/api/expenses/?month=${selectedMonth}`,
+          `/expenses/?month=${selectedMonth}`,
           { method: 'GET' },
           refreshToken,
           handleSessionExpired
@@ -171,6 +221,10 @@ function UpdateExpenseModal({ onClose, onSuccess }) {
   
 
 
+  /* ────────────────────────────────
+     EDIT AND UPDATE ENTRY AMOUNT
+  ──────────────────────────────── */
+
 const handleEdit = (id, currentAmount) => {
   if (editingId === id) {
     setEditingId(null);
@@ -191,7 +245,7 @@ const handleUpdate = async (id) => {
 
   try {
     const endpoint =
-      entryType === 'budget' ? `/api/budgets/${id}/` : `/api/expenses/${id}/`;
+      entryType === 'budget' ? `/budgets/${id}/` : `/expenses/${id}/`;
 
     const res = await authFetch(
       endpoint,
@@ -226,10 +280,14 @@ const handleUpdate = async (id) => {
 };
 
 
+  /* ────────────────────────────────
+    DELETE EXPENSE AND BUDGET LOGIC
+   ──────────────────────────────── */
+
 const handleDelete = async (id) => {
   try {
     const endpoint =
-      entryType === 'budget' ? `/api/budgets/${id}/` : `/api/expenses/${id}/`;
+      entryType === 'budget' ? `/budgets/${id}/` : `/expenses/${id}/`;
 
     const res = await authFetch(
       endpoint,
@@ -316,12 +374,19 @@ const handleDelete = async (id) => {
                   <FiEdit3 />
                 </button>
 
-                <span className="category-label">
-                  {(entry.custom_category || entry.category || entry.category_name)
-                    ?.split(' ')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ')}
-                </span>
+                      <div className="category-container">
+                        <span className="category-label">
+                          {entry.category === 'custom'
+                            ? entry.custom_category.charAt(0).toUpperCase() + entry.custom_category.slice(1).toLowerCase()
+                            : entry.category.charAt(0).toUpperCase() + entry.category.slice(1).toLowerCase()}
+                        </span>
+                        {entry.recurring_monthly === 'yes' && (
+                          <span className="recurring-label" title="This income recurs monthly">
+                            🔁 Recurring
+                          </span>
+                        )}
+                      </div>
+
 
                 {editingId === entry.id ? (
                   <div className="edit-block">

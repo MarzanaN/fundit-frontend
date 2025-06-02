@@ -9,12 +9,10 @@ body{
   padding: 0 !important;
 }
 
-/* App wrapper */
 .App {
   text-align: center;
 }
 
-/* NAV BAR LAYOUT */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -22,19 +20,18 @@ body{
   padding: 20px 30px;
   background-color: #000000;
   border-bottom: 1px solid rgba(142, 102, 252, 0.363);
-  flex-wrap: nowrap; /* Prevent wrapping */
+  flex-wrap: nowrap; 
   padding-left: 7rem;
   padding-right: 7rem;
 }
 
-/* Logo styling */
+
 .logo img {
   display: block;
   max-width: 120px;
   height: auto;
 }
 
-/* Navigation styles */
 .main-nav ul {
   display: flex;
   gap: 60px;
@@ -63,7 +60,6 @@ body{
   text-decoration: none;
 }
 
-/* Auth buttons (Sign In & Register) */
 .auth-buttons {
   display: flex;
   gap: 10px;
@@ -108,7 +104,7 @@ body{
   color: rgb(142, 102, 252);
 }
 
-/* Navigation Links */
+
 .footer-nav {
   display: flex;
   justify-content: center;
@@ -132,7 +128,7 @@ body{
   color: white;
 }
 
-/* Social Icons  */
+
 .social-icons {
   display: flex;
   justify-content: center;
@@ -150,7 +146,7 @@ body{
   color: white;
 }
 
-/* User Dropdown Button  */
+
 .user-dropdown {
   position: relative;
   display: inline-block;
@@ -184,7 +180,7 @@ body{
   font-weight: bold;
 }
 
-/* Dropdown menu styling */
+
 .user-dropdown-menu {
   position: absolute;
   top: 42px;
@@ -223,13 +219,13 @@ body{
   color: white;
 }
 
-.auth-overlay {
+.auth-overlay-signin {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(15, 15, 15, 0.95);
+  background-color: rgb(0, 0, 0);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -240,7 +236,7 @@ body{
   animation: fadeZoom 0.6s ease forwards;
 }
 
-.auth-overlay-header {
+.auth-overlay-header-signin {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
@@ -298,7 +294,7 @@ body{
   color: #1f1f1f;
 }
 
-.main-auth {
+.main-auth-signin {
   background-color: black;
   color: white;
   padding: 1.5rem;
@@ -446,17 +442,9 @@ body{
   cursor: pointer;
 }
 
-.modal-content p {
-  color: rgb(0, 0, 0);
-  line-height: 1.6;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 400;
-  margin-top: -0.5rem;
-  
-}
 
 .modal-text strong {
-  color: #a47eff;
+  color: #000000;
   font-weight: 400;
   font-size: 16px;
   font-weight: 800;
@@ -514,7 +502,6 @@ body{
 }
 
 
-
 @keyframes slideInRight {
   0% {
     opacity: 0;
@@ -562,7 +549,7 @@ body{
     font-size: 1.5rem;
     color: rgb(142, 102, 252);
     position: absolute;
-    left: 20px; 
+    left: 24px; 
     top: 20px; 
     z-index: 1001; 
   }
@@ -613,22 +600,26 @@ body{
   
 }
 
+}
+
+
+@media (min-width: 250px) and (max-width: 900px) {
 .auth-overlay {
   background-color: rgb(0, 0, 0);
 }
 
-
-.main-auth {
+.main-auth-signin {
   background-color: black;
   border: none;
   box-shadow: none;
   width: 300px;
   padding-top: 5rem;
-  margin-left: -4rem;
-  margin-top: -10rem;
+  margin-left: -5rem;
+  margin-top: 0rem;
 }
 
 }
+
 
 
 @media (min-width: 1551px) and (max-width: 2200px) {

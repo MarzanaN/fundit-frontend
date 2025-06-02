@@ -3,6 +3,7 @@ import '../CSS/UpdateIncomeModal.css';
 import { FiEdit3, FiTrash2 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../api';
 
 
 const getAllMonths = () => {
@@ -29,51 +30,79 @@ function UpdateIncomeModal({ onClose, onSuccess }) {
   const { logout} = useAuth();
   const navigate = useNavigate();
   
-    const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
-      let token = localStorage.getItem('accessToken');
-      const headers = {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-    
-      let response = await fetch(url, { ...options, headers });
-    
-      if (response.status === 401 && refreshToken) {
-        try {
-          const newToken = await refreshToken();
-          if (newToken) {
-            localStorage.setItem('accessToken', newToken);
-            const retryHeaders = {
-              ...options.headers,
-              Authorization: `Bearer ${newToken}`,
-              'Content-Type': 'application/json',
-            };
-            response = await fetch(url, { ...options, headers: retryHeaders });
+
+  /* ────────────────────────────────
+     AUTH FETCH LOGIC
+  ──────────────────────────────── */
+
+   // Helper function to make authenticated fetch requests with token refresh handling
+  const authFetch = async (url, options = {}, refreshToken, onSessionExpired) => {
+    const fullUrl = API_BASE_URL + url;
+
+    // Get access token from local storage
+    let token = localStorage.getItem('accessToken');
+    // Prepare headers including authorization
+    const headers = {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    // Initial fetch request with current token
+    let response = await fetch(fullUrl, { ...options, headers });
+
+    // If unauthorized (401) and refresh token available, try to refresh token and retry
+    if (response.status === 401 && refreshToken) {
+      try {
+        const newToken = await refreshToken();
+        if (newToken) {
+          localStorage.setItem('accessToken', newToken);
+          const retryHeaders = {
+            ...(options.headers || {}),
+            Authorization: `Bearer ${newToken}`,
+            'Content-Type': 'application/json',
+          };
+          // Retry request with new token
+          response = await fetch(fullUrl, { ...options, headers: retryHeaders });
+        } else {
+          // Refresh failed, remove token and call session expired callback
+          localStorage.removeItem('accessToken');
+          if (typeof onSessionExpired === 'function') {
+            onSessionExpired();
           }
-        } catch (error) {
-          console.error('Error refreshing token:', error);
         }
-      }
-    
-      if (response.status === 401) {
+      } catch (error) {
+        // Error refreshing token, remove token and call session expired callback
+        console.error('Error refreshing token:', error);
         localStorage.removeItem('accessToken');
         if (typeof onSessionExpired === 'function') {
-          onSessionExpired(); 
+          onSessionExpired();
         }
       }
-      return response;
-    };
-    
-    const handleSessionExpired = () => {
-      setShowSessionExpired(true); 
-    };
-    
-    const handleModalClose = () => {
-      logout(); 
-      setShowSessionExpired(false);
-      navigate('/'); 
-    };
+    }
+
+    // If still unauthorized after retry, clear token and notify session expired
+    if (response.status === 401) {
+      localStorage.removeItem('accessToken');
+      if (typeof onSessionExpired === 'function') {
+        onSessionExpired();
+      }
+    }
+
+    return response; // Return the fetch response object
+  };
+  
+  // Show the session expired message/UI
+  const handleSessionExpired = () => {
+    setShowSessionExpired(true); 
+  };
+  
+  // Handle modal close due to session expiry: logout user, hide message, and redirect to home
+  const handleModalClose = () => {
+    logout(); 
+    setShowSessionExpired(false);
+    navigate('/'); 
+  };
 
 
   useEffect(() => {
@@ -93,13 +122,17 @@ function UpdateIncomeModal({ onClose, onSuccess }) {
       setIncomeEntries([]);
       return;
     }
+
+  /* ────────────────────────────────
+     fFETCH INCOME ENTRIES
+  ──────────────────────────────── */
   
     const fetchIncome = async () => {
       setLoading(true);
       setMessage('');
       try {
         const res = await authFetch(
-          `/api/income/?month=${selectedMonth}`,
+          `/income/?month=${selectedMonth}`,
           { method: 'GET' },
           refreshToken,
           handleSessionExpired
@@ -125,6 +158,10 @@ function UpdateIncomeModal({ onClose, onSuccess }) {
   }, [selectedMonth, refreshToken]);
   
 
+  /* ────────────────────────────────
+     EDIT AND UPDATE INCOME AMOUNT
+  ──────────────────────────────── */
+
   const handleEdit = (id, currentAmount) => {
     if (editingId === id) {
       setEditingId(null);
@@ -144,7 +181,7 @@ function UpdateIncomeModal({ onClose, onSuccess }) {
   
     try {
       const res = await authFetch(
-        `/api/income/${id}/`,
+        `/income/${id}/`,
         {
           method: 'PATCH',
           headers: {
@@ -174,11 +211,14 @@ function UpdateIncomeModal({ onClose, onSuccess }) {
     }
   };
   
+  /* ────────────────────────────────
+     DELETE INCOME ENTRY
+  ──────────────────────────────── */
 
   const handleDelete = async (id) => {
     try {
       const res = await authFetch(
-        `/api/income/${id}/`,
+        `/income/${id}/`,
         {
           method: 'DELETE',
         },
@@ -205,7 +245,7 @@ function UpdateIncomeModal({ onClose, onSuccess }) {
     <div className="modal-overlay">
       <div className={`modal-content ${selectedMonth ? 'expanded' : 'tall'}`}>
         <button className="close-btn" onClick={onClose}>×</button>
-        <h2>Update Income Entry</h2>
+        <h2>Update Income</h2>
 
         <label>Select Month:</label>
         <select
@@ -289,7 +329,7 @@ function UpdateIncomeModal({ onClose, onSuccess }) {
                       {confirmationId === entry.id && (
                         <div className="confirmation-overlay">
                           <div className="confirmation-box">
-                            <p>Are you sure you want to delete this entry?</p>
+                            <p className="confrim">Are you sure you want to delete this entry?</p>
                             <div className="confirmation-buttons row">
                               <button onClick={() => handleDelete(entry.id)}>Yes</button>
                               <button onClick={() => setConfirmationId(null)}>No</button>
