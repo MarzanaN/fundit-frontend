@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/activate/:uid/:token", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
