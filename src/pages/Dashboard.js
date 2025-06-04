@@ -625,8 +625,8 @@ const CustomTooltip = ({ active, payload, label }) => {
             <h2 className='welcome-message'>Welcome to Fundit!</h2>
             <p className='welcome-text'>
               We've provided some sample data to help you explore and visualise Fundit's features.
-              Feel free to play around and see how it works! 🎉<br /><br />
-              <span>Please note that once the session expires or you log out, any new data will not be saved.</span>
+              Feel free to play around and see how it works before committing to register! 🎉<br /><br />
+              <span>Therefore, please note that once the session expires or you log out, any new data will not be saved.</span>
             </p>
             <button onClick={handleCloseOverlay}>Okay</button>
           </div>
